@@ -70,14 +70,6 @@ Rails.application.configure do
   # Disable caching for Action Mailer templates even if Action Controller
   # caching is enabled.
   rubyconfig.action_mailer.delivery_method = :smtp
-  config.action_mailer.smtp_settings = {
-    address: 'smtp.resend.com',
-    port: 465,
-    user_name: 'resend',
-    password: ENV.fetch('RESEND_API_KEY'),
-    authentication: :login,
-    enable_starttls_auto: true
-  }
   config.action_mailer.default_url_options = { host: ENV.fetch('APP_HOST') }
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.perform_deliveries = true

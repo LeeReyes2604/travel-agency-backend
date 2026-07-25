@@ -1,0 +1,3 @@
+development:
+  jwt:
+    expiry_hours: 24
