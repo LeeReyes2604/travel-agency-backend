@@ -1,9 +1,13 @@
 Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
-      namespace :admin do
+        namespace :admin do
         namespace :auth do
-          resources :sessions, only: :create
+          resources :sessions, only: :create do
+            post :refresh, on: :collection
+            delete :logout, on: :collection, action: :destroy
+          end
+          resource :registration, only: [:show, :update]
         end
         resources :subscribers, only: [:index, :destroy] do
           collection do
@@ -13,7 +17,7 @@ Rails.application.routes.draw do
         resources :inquiries, except: :create
         resources :travel_packages
         resources :promos
-        resource :user, only: :show
+        resource :user, controller: "user", only: [ :show, :update ]
         resources :users, only: [:index, :create, :update, :destroy]
         resources :analytics, only: :index
       end

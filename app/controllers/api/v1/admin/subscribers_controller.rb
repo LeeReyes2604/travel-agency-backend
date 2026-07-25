@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class Api::V1::Admin::SubscribersController < Api::V1::AdminController
-    before_action :require_super_admin!
 
     def index
         subscribers = Subscriber.active

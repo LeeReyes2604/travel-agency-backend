@@ -6,8 +6,9 @@ class JwtService
 
   class << self
     # CREATE TOKEN
-    def encode(payload, exp_hours = Rails.application.config_for(:settings)[:jwt][:expiry_hours])
+    def encode(payload, exp_hours = ENV.fetch("JWT_EXPIRY_HOURS", 1))
       payload = payload.merge(
+        token_type: "access",
         exp: Time.now.to_i + exp_hours.to_i * 3600
       )
 

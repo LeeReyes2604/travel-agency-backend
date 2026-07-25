@@ -1,5 +1,5 @@
 class Api::V1::Admin::InquiriesController < Api::V1::AdminController
-  before_action :require_super_admin!
+
   before_action :set_inquiry, only: [:show, :update, :destroy]
 
   def index

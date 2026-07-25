@@ -67,14 +67,6 @@ Rails.application.configure do
   # config.active_job.queue_adapter = :resque
   # config.active_job.queue_name_prefix = "travel_agency_backend_production"
 
-  # Disable caching for Action Mailer templates even if Action Controller
-  # caching is enabled.
-  rubyconfig.action_mailer.delivery_method = :smtp
-  config.action_mailer.default_url_options = { host: ENV.fetch('APP_HOST') }
-  config.action_mailer.raise_delivery_errors = true
-  config.action_mailer.perform_deliveries = true
-  config.action_mailer.perform_caching = false
-
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false

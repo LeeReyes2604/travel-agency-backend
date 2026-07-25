@@ -13,7 +13,9 @@ class Api::V1::AdminController < ApplicationController
 
         return if decoded_token.blank?
 
-        @current_user = User.find(decoded_token[:user_id])
+        return unless decoded_token[:token_type] == "access"
+
+        @current_user = User.find_by(id: decoded_token[:user_id])
     end
 
     def current_user
@@ -22,7 +24,7 @@ class Api::V1::AdminController < ApplicationController
 
     def authenticate_user!
         return if current_user
- 
+
         render json: { error: "Unauthorized" }, status: :unauthorized
     end
 
