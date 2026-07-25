@@ -1,116 +1,139 @@
-# 🚀 Rails API + MySQL Setup Guide (Pinned Versions)
+# Docker Setup
 
-This project is a Rails API backend using MySQL.
+## 1. Clone the Repository
 
----
-
-## 📦 Tech Stack
-
-- Ruby: 3.2.3  
-- Rails: 7.1.x  
-- MySQL: 8.0.x  
-- Bundler: 2.4+
+```bash
+git clone <repository-url>
+cd <project-directory>
+```
 
 ---
 
-## 🐧 Setup (Linux / macOS)
+## 2. Create the Environment File
 
-### 1. Install dependencies
+Copy the environment template:
 
-sudo apt update
-sudo apt install -y build-essential libssl-dev libreadline-dev zlib1g-dev libyaml-dev libffi-dev libxml2-dev libxslt1-dev default-libmysqlclient-dev pkg-config
+```bash
+cp .env.template .env
+```
+
+Update the required values in `.env`.
+
+### Google reCAPTCHA v2
+
+Create a **Google reCAPTCHA v2 ("I'm not a robot" Checkbox)** site by following the instructions at:
+
+https://cloud.google.com/security/products/recaptcha
+
+Obtain the **Site Key** and **Secret Key**, then add them to your `.env` file:
+
+```env
+RECAPTCHA_SITE_KEY=your-site-key
+RECAPTCHA_SECRET_KEY=your-secret-key
+```
+
+Also configure your frontend to use the same **Site Key** for Google reCAPTCHA.
+
+### JWT Secret
+
+Generate a secure JWT secret:
+
+```bash
+openssl rand -hex 64
+```
+
+Add it to your `.env` file:
+
+```env
+JWT_SECRET=your-generated-secret
+```
+
+### CORS Origins
+
+Configure the frontend URLs that are allowed to access the API.
+
+For local React development, this is typically:
+
+```env
+CORS_ORIGINS=http://localhost:5173
+```
+
+If multiple frontend URLs need access, separate them with commas:
+
+```env
+CORS_ORIGINS=http://localhost:5173,http://localhost:4173,https://example.com
+```
+
+> For Vite development, the default frontend URL is usually `http://localhost:5173`.
 
 ---
 
-### 2. Install Ruby (rbenv)
+## 3. Create the Settings File
 
-git clone https://github.com/rbenv/rbenv.git ~/.rbenv
-echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
-echo 'eval "$(rbenv init - bash)"' >> ~/.bashrc
-source ~/.bashrc
+```bash
+cp config/settings.example.yml config/settings.yml
+```
 
-git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
-
-rbenv install 3.2.3
-rbenv global 3.2.3
+Update `config/settings.yml` as needed.
 
 ---
 
-### 3. Install Rails
+## 4. Build the Docker Images
 
-gem install bundler -v 2.4.22
-gem install rails -v 7.1.3
-rbenv rehash
-
----
-
-### 4. Install MySQL
-
-sudo apt install -y mysql-server
-sudo systemctl enable mysql
-sudo systemctl start mysql
-
-mysql --version
+```bash
+docker compose build
+```
 
 ---
 
-## 🚀 Create Rails API
+## 5. Start the Application
 
-rails new myapp --api -d mysql
-cd myapp
-bundle install
+```bash
+docker compose up
+```
 
----
+Or run in the background:
 
-## 🗄️ Setup database
+```bash
+docker compose up -d
+```
 
-rails db:create
-rails db:migrate
+The application will be available at:
 
----
-
-## ▶️ Run server
-
-rails s
-
-Open:
+```text
 http://localhost:3000
+```
 
 ---
 
-## 🪟 Windows (WSL2)
+# Common Commands
 
-Use Ubuntu WSL2 ONLY.
+## Open a Bash Shell
 
-Follow same Linux steps.
+```bash
+docker compose exec web bash
+```
 
----
+## Rails Console
 
-## ⚠️ Common fixes
+```bash
+bundle exec rails console
+```
 
-### mysql2 error
-sudo apt install -y default-libmysqlclient-dev
+## Generate Files
 
-### yaml / psych error
-sudo apt install -y libyaml-dev
+```bash
+bundle exec rails g model User name:string email:string
+```
 
-### port 3306 conflict
-sudo lsof -i :3306
-sudo systemctl stop mysql
+## Run Migrations
 
----
+```bash
+bundle exec rails db:migrate
+```
 
-## 📌 Example API
+## Stop the Application
 
-rails g scaffold Post title:string body:text
-rails db:migrate
-
----
-
-## Endpoints
-
-GET /posts  
-POST /posts  
-GET /posts/:id  
-PUT /posts/:id  
-DELETE /posts/:id
+```bash
+docker compose down
+```

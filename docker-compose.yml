@@ -1,0 +1,82 @@
+services:
+  # --- Rails Web Application ---
+  web:
+    build:
+      context: .
+      dockerfile: docker/app/Dockerfile
+    command: >
+      bash -c "rm -f tmp/pids/server.pid &&
+      bundle exec rails db:prepare &&
+      bundle exec rails server -b 0.0.0.0 -p 3000"
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - ~/.ssh:/root/.ssh:ro
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  # --- Sidekiq Background Worker ---
+  sidekiq:
+    build:
+      context: .
+      dockerfile: docker/app/Dockerfile
+    command: bundle exec sidekiq
+    volumes:
+      - .:/app
+      - ~/.ssh:/root/.ssh:ro
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  # --- MySQL Database ---
+  mysql:
+    image: mysql:8.0.40
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-password}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-password}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  # --- Redis (Shared for Sidekiq & Caching) ---
+  redis:
+    image: redis:7.0.15
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - app-network
+
+volumes:
+  mysql_data:
+  redis_data:
+
+networks:
+  app-network:
+    driver: bridge
