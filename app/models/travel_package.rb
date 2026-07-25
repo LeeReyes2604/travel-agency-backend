@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
 class TravelPackage < ApplicationRecord
+  MAX_PHOTOS = 8
+
   include SoftDeletable
 
-  mount_uploader :image, ImageUploader
+  has_rich_text :description
 
-  validates :image, presence: true
   validates :title, presence: true
   validates :description, presence: true
   validates :destination, presence: true
@@ -14,59 +15,36 @@ class TravelPackage < ApplicationRecord
   validates :base_price,
             presence: true,
             numericality: { greater_than: 0 }
-
+  validate :travel_package_photos_positions
+  validates :travel_package_photos, length: { maximum: MAX_PHOTOS, message: "you can only upload upto 8 photos" }
+  validates :travel_package_photos, length: { minimum: 1, message: "atleast 1 photo is required" }
   scope :active, -> { where(is_active: true) }
   scope :destination, ->(destination) { where(destination: destination) if destination.present? }
+
+  before_save :set_excerpt
 
   default_scope { where(deleted_at: nil) }
 
   has_many :inquiries, dependent: :destroy
+  has_many :travel_package_photos
+  has_one :cover_photo, -> { order(position: :asc) }, class_name: "TravelPackagePhoto"
+  accepts_nested_attributes_for :travel_package_photos, allow_destroy: true
 
-  require 'base64'
-
-  def image_data=(data)
-    return if data.blank?
-    
-    content_type = data.match(/data:(.*);base64/)[1]
-    extension = content_type.split('/').last
-    decoded = Base64.decode64(data.split(',').last)
-    
-    temp_file = Tempfile.new(['package_image', ".#{extension}"])
-    temp_file.binmode
-    temp_file.write(decoded)
-    temp_file.rewind
-    
-    self.image = ActionDispatch::Http::UploadedFile.new(
-      tempfile: temp_file,
-      filename: "package_image.#{extension}",
-      type: content_type
-    )
+  def set_excerpt
+    self.excerpt = description.to_plain_text.truncate(150)
   end
 
   def active?
     is_active
   end
 
-  def soft_delete
-    update(deleted_at: Time.current)
-  end
+  private
 
-  def restore
-    update(deleted_at: nil)
-  end
+  def travel_package_photos_positions
+    positions = self.travel_package_photos.map(&:position)
 
+    return if positions.sort == (1..travel_package_photos.length).to_a
 
-  def deleted?
-    deleted_at.present?
-  end
-
-
-  def self.view_deleted
-    unscoped.where.not(deleted_at: nil)
-  end
-
-
-  def self.view_all
-    unscoped
+    errors.add(:travel_package_photos, "positions must be consecutive starting from 1")
   end
 end

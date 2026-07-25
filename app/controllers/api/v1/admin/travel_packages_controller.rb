@@ -1,3 +1,4 @@
+
 # frozen_string_literal: true
 
 class Api::V1::Admin::TravelPackagesController < Api::V1::AdminController
@@ -6,9 +7,9 @@ class Api::V1::Admin::TravelPackagesController < Api::V1::AdminController
   PER_PAGE = 10
 
   def index
-    travel_packages = TravelPackage.order(created_at: :desc).page(params[:page]).per(PER_PAGE)
+    travel_packages = TravelPackage.includes(:cover_photo).page(params[:page]).per(PER_PAGE)
     render json: {
-      travel_packages: TravelPackageBlueprint.render_as_hash(travel_packages),
+      travel_packages: TravelPackageBlueprint.render_as_hash(travel_packages, view: :preview),
       meta: {
         current_page: travel_packages.current_page,
         next_page: travel_packages.next_page,
@@ -20,7 +21,7 @@ class Api::V1::Admin::TravelPackagesController < Api::V1::AdminController
   end
 
   def show
-    render json: TravelPackageBlueprint.render_as_hash(@travel_package)
+    render json: TravelPackageBlueprint.render_as_hash(@travel_package, view: :detailed)
   end
 
   def create
@@ -64,7 +65,7 @@ class Api::V1::Admin::TravelPackagesController < Api::V1::AdminController
       :number_of_travelers,
       :destination,
       :is_active,
-      :image_data
+      travel_package_photos_attributes: %i[id image alt_text position _destroy]
     )
   end
 end

@@ -252,6 +252,7 @@ GEM
       erb
       psych (>= 4.0.0)
       tsort
+    recaptcha (5.21.2)
     redis (5.4.1)
       redis-client (>= 0.22.0)
     redis-client (0.30.0)
@@ -336,12 +337,14 @@ DEPENDENCIES
   carrierwave (~> 3.1)
   debug
   dotenv-rails
+  image_processing (~> 1.14)
   jwt
   kaminari
   mysql2 (~> 0.5)
   puma (>= 5.0)
   rack-cors
   rails (~> 7.2.3, >= 7.2.3.1)
+  recaptcha
   redis
   resend
   rest-client

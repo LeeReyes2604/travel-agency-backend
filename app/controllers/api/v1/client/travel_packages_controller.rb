@@ -2,24 +2,17 @@
 
 class Api::V1::Client::TravelPackagesController < Api::V1::ClientController
   def index
-    travel_packages = TravelPackage.order(created_at: :desc)
-                                   .page(params[:page])
-                                   .per(10)
-
+    travel_packages = TravelPackage.active.order(created_at: :desc)
+    
     render json: {
-      travel_packages: TravelPackageBlueprint.render_as_hash(travel_packages),
-      meta: {
-        current_page: travel_packages.current_page,
-        total_pages: travel_packages.total_pages,
-        total_count: travel_packages.total_count
-      }
+      travel_packages: TravelPackageBlueprint.render_as_hash(travel_packages, view: :preview)
     }
   end
 
   def show
     travel_package = TravelPackage.find(params[:id])
 
-    render json: TravelPackageBlueprint.render_as_hash(travel_package)
+    render json: TravelPackageBlueprint.render_as_hash(travel_package, view: :detailed)
   end
 
   def inquire
