@@ -8,8 +8,8 @@ class Api::V1::Admin::InquiriesController < Api::V1::AdminController
     if params[:search].present?
       search_term = "%#{params[:search]}%"
       inquiries = inquiries.where(
-        "full_name LIKE :search OR email :search OR destination LIKE :search",
-        search_term
+        "full_name LIKE :search OR email LIKE :search OR destination LIKE :search",
+        search: search_term
       )
     end
     

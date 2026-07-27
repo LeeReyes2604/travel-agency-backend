@@ -7,7 +7,7 @@ class Api::V1::Admin::SubscribersController < Api::V1::AdminController
         
         if params[:search].present?
           search_term = "%#{params[:search]}%"
-          subscribers = subscribers.where("name LIKE :search OR email LIKE :search", search_term)
+          subscribers = subscribers.where("name LIKE :search OR email LIKE :search", search: search_term)
         end
         
         subscribers = subscribers.order(subscribed_at: :desc)

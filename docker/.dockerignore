@@ -1,0 +1,42 @@
+# Git
+.git
+.github
+.gitignore
+.gitattributes
+
+# Editors
+.vscode
+.idea
+
+# Environment
+.env
+.env.*
+!.env.example
+config/settings.example.yml
+
+# Tests
+spec
+test
+coverage
+
+# Runtime files
+log
+tmp
+storage
+
+# Node
+node_modules
+
+# Bundler
+.bundle
+
+# Documentation
+README.md
+LICENSE
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker (optional)
+docker-compose*.yml

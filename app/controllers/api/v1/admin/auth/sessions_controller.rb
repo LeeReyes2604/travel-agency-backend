@@ -6,7 +6,6 @@ class Api::V1::Admin::Auth::SessionsController < ApplicationController
             return render json: { error: "reCAPTCHA verification failed" }, status: :unprocessable_entity
         end
 
-
         user = User.find_by(email: params[:email])
 
         unless user&.activated? && user.authenticate(params[:password])
