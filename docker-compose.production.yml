@@ -9,7 +9,7 @@ services:
     command: bundle exec rails server -b 0.0.0.0 -p 3000
     restart: unless-stopped
     env_file:
-      - .env.production
+      - .env
     ports:
       - "127.0.0.1:3000:3000"
     depends_on:
@@ -28,7 +28,7 @@ services:
     command: bundle exec sidekiq
     restart: unless-stopped
     env_file:
-      - .env.production
+      - .env
     stop_grace_period: 1m
     depends_on:
       db:
@@ -44,7 +44,7 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     restart: unless-stopped
     env_file:
-      - .env.production
+      - .env
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
